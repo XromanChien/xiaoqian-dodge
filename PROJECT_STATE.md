@@ -69,4 +69,5 @@ InputManager 的 swipe 方法只是預留呼叫入口，不等於已完成手勢
 - 使用者授權設定公開試玩部署；工程範圍為 vite.config.js、.github/workflows/deploy.yml、README.md 與本狀態文件。
 - 不修改 src、image、核心遊戲規則。正式 base=/xiaoqian-dodge/，開發 base=/。
 - Node 22／pnpm 10.11.0／frozen lockfile；僅發布 dist；master 程式或素材推送自動部署，文件更新略過。
-- 本機 Vite production build 成功；既有 Phaser bundle 大小警告保留。公開部署與瀏覽器驗證進行中。
+- 本機 Vite production build 成功；既有 Phaser bundle 大小警告保留。GitHub Actions run 41353949862 全部成功。公開網址 https://xromanchien.github.io/xiaoqian-dodge/ 回傳 HTTP 200；Edge 隔離瀏覽器驗證首頁、開始遊戲、左右鍵輸入，已看到 GameScene 運行；無 pageerror 或 HTTP 4xx/5xx 素材回應。
+
