@@ -6,7 +6,7 @@
 ## 專案位置與工具
 
 - 根目錄：C:/Users/錢君仲/Documents/Codex-Practice/xiaoqian-dodge
-- 目前不是 Git repository：本次 git rev-parse 回報 not a git repository，未自行 git init。
+- 已建立 Git repository：master 追蹤 origin/master；遠端 https://github.com/XromanChien/xiaoqian-dodge.git；初始版本 1f8911774c8ab016ad978bbfd989d4037f38a455。
 - package.json：版本 0.1.0、JavaScript ESM；Phaser ^3.90.0、Vite ^7.0.0；Node >=22.12.0。
 - 有 pnpm-lock.yaml、node_modules、dist；npm scripts 僅 dev、build、preview，沒有 test script。
 - src 為原始碼；image 為圖片；image/backgrounds 為 12 關純場景及生成紀錄。dist 是產物。
@@ -41,7 +41,7 @@ InputManager 的 swipe 方法只是預留呼叫入口，不等於已完成手勢
 | ROAD-001 | 背景既有白線與實際三車道未一致；過去移動範圍與投影數值檢查通過，使用者仍指出視覺不合 | 待使用者決策。已提案移除 12 張背景道路白線，改由程式畫共用三車道。尚未同意；本次建團隊不等於同意該提案 |
 | ART-001 | 單張背景只能縮放與淡入，無法呈現真實連續空間；部分 UI 與大幅角色為靜態圖 | 現況限制；分層與 Sprite 待指派 |
 | DOC-001 | README 含歷次追加紀錄及早期設計，部分描述已被後續實作取代 | 本次未改寫 README；未來維護以本狀態、規格與程式核對 |
-| INFRA-001 | 沒有 Git 初始化，也無持久化自動測試套件 | 本次記錄，不新增 Git 或測試系統 |
+| INFRA-001 | 已有 Git、GitHub 遠端與 Pages 建置部署流程；尚無持久化自動測試套件 | 建置檢查不等於完整遊戲自動測試 |
 
 ## 規格與決策紀錄
 
@@ -63,3 +63,10 @@ InputManager 的 swipe 方法只是預留呼叫入口，不等於已完成手勢
 
 每筆記錄保留：日期／需求、任務分類、使用者授權、工程／美術分工、修改檔案、驗證證據、已知限制、待決策、下一步。
 完成新工作時更新上方現況，不只在底部累加過期結論。
+
+## GitHub Pages 部署（2026-11-02）
+
+- 使用者授權設定公開試玩部署；工程範圍為 vite.config.js、.github/workflows/deploy.yml、README.md 與本狀態文件。
+- 不修改 src、image、核心遊戲規則。正式 base=/xiaoqian-dodge/，開發 base=/。
+- Node 22／pnpm 10.11.0／frozen lockfile；僅發布 dist；master 程式或素材推送自動部署，文件更新略過。
+- 本機 Vite production build 成功；既有 Phaser bundle 大小警告保留。公開部署與瀏覽器驗證進行中。

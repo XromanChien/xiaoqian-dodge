@@ -107,3 +107,10 @@ StageBackdrop 將遠景依本關前進距離緩慢放大，中央路面取樣以
 
 ## 道路與場景對齊
 roadAlignment.js 為 12 張背景設定消失點與前景道路寬度。StageBackdrop 將背景縮放、位移及換景權重轉成共用道路投影，PerspectiveRoad 提供角色、障礙與金幣的統一座標。已移除額外的路面、藍色邊線與虛線，直接使用圖片中的道路。換道動畫改為跑道索引插值，使動畫期間也能跟隨背景透視。
+
+## GitHub Pages 試玩與部署
+
+公開試玩網址：https://xromanchien.github.io/xiaoqian-dodge/
+
+推送 master 分支的程式或素材更新後，GitHub Actions 會使用 Node 22、pnpm 10.11.0 與 frozen lockfile 建置，再發布 dist。純 Markdown／Skill 文件更新不觸發發布，也可在 Actions 手動執行 Deploy game to GitHub Pages。
+本機開發仍使用根路徑；正式建置使用 /xiaoqian-dodge/。LocalStorage 依網址來源分開，因此公開網站與 localhost 的金幣存檔各自獨立。
