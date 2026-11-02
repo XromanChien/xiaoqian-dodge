@@ -1,3 +1,6 @@
+import { SKILL_ART } from '../data/skills.js';
+import { RUNNER_ART, RUNNER_FRAMES } from '../data/runnerArt.js';
+import { DODGE_VOICE_KEY, DODGE_VOICE_URL } from '../audio/DodgeVoice.js';
 import Phaser from 'phaser';
 import { STAGE_ART } from '../data/stageArt.js';
 import { SCREEN_ART } from '../data/screenArt.js';
@@ -8,6 +11,9 @@ export default class BootScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image(RUNNER_ART.key, RUNNER_ART.url);
+    for (const art of Object.values(SKILL_ART)) this.load.image(art.key, art.url);
+    if (DODGE_VOICE_URL) this.load.audio(DODGE_VOICE_KEY, DODGE_VOICE_URL);
     const label = this.add.text(360, 610, '場景載入中 0%', {
       fontFamily: 'system-ui, "Microsoft JhengHei", sans-serif', fontSize: '28px', color: '#ffffff'
     }).setOrigin(0.5);
@@ -17,6 +23,14 @@ export default class BootScene extends Phaser.Scene {
   }
 
   create() {
+    const texture = this.textures.get(RUNNER_ART.key);
+    for (const [name, bounds] of Object.entries(RUNNER_FRAMES)) {
+      if (!texture.has(name)) texture.add(name, 0, ...bounds);
+    }
+    for (const art of Object.values(SKILL_ART)) {
+      const texture = this.textures.get(art.key);
+      art.frames.forEach((frame, i) => { if (!texture.has(String(i))) texture.add(String(i), 0, ...frame.rect); });
+    }
     this.scene.start('MenuScene');
   }
 }

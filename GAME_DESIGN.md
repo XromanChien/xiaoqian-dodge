@@ -14,7 +14,7 @@ CharacterScene 只有小錢可選，其餘鎖定／敬請期待。ShopScene 使�
 | 項目 | 基準 |
 | --- | --- |
 | 畫面 | 邏輯解析度 720×1280；Phaser FIT、CENTER_BOTH；保持 9:16 |
-| 角色 | 中心約 y=960（75% 高度），腳點 y=1020；暫用幾何外觀 |
+| 角色 | 中心約 y=960（75% 高度），腳點 y=1020；主視覺衍生背影Sprite；側閃只影響外觀 |
 | 跑道 | 左／中／右三條；約 180ms 平滑換到相鄰道，不越界 |
 | 輸入 | 左右方向鍵；觸控裝置左下／右下按鈕；預留 swipeLeft／swipeRight，全部共用 moveLeft／moveRight |
 | 生命 | 每局 3 點；碰撞扣 1；同一障礙不重複扣血；生命為 0 結算 |
@@ -53,11 +53,12 @@ CharacterScene 只有小錢可選，其餘鎖定／敬請期待。ShopScene 使�
 - StageManager：距離／關卡／子路段／完成判定，不把關卡寫成 GameScene 大量 if。
 - InputManager：輸入轉接；LaneMovementController：唯一換道邏輯及索引插值。
 - PerspectiveRoad：共用 1/z 投影；roadAlignment：背景道路校正資料。
-- StageBackdrop：關內單張持續推進，不 loop；背景之間 2400ms 平滑淡入，對齊消失點。
+- StageBackdrop：地標單張持續推進，不 loop；背景之間2400ms平滑淡入、對齊消失點；按固定650m尺度推進，不由關卡長度決定倍率。
+- RoadSurface：以共用投影及累積公尺生成材質；PerspectiveRoad畫唯一三道標線；兩者使用相同轉場權重。
 - ObstacleManager、CoinManager：各自生成、投影、判定、回收。判定使用角色當下 X 與腳點深度掃過區間。
 - GameScene：組裝各系統與本局生命、減速、結束；ResultScene：呈現結算。
 - shopItems.js 為商品與價格資料；UI 視覺不得成為經濟數值來源。
-- 道路白線不一致是已知問題，不代表目前已符合三車道視覺要求，見 PROJECT_STATE.md 的 ROAD-001。
+- 原圖白線由共用動態路面取代；道心與可見標線一致。近處側景接縫與遮蓋限制見 PROJECT_STATE.md 的 ROAD-001。
 
 ## 存檔與資料
 
@@ -70,3 +71,12 @@ LocalStorage key：xiaoqian-dodge.profile.v1。
 ## 未來範圍
 
 登入、Supabase、排行榜、Capacitor、雲端同步須另行立項。不得因工程師職責包含它們而立即加套件、資料庫或登入頁。
+
+換道表演：成功換道送出 runner-dodge 事件，RunnerAnimator 處理左右低重心姿勢與回正；不改180ms移動或碰撞尺寸。語音優先使用原創錄音，缺檔則嘗試裝置中文TTS；邊界拒絕不播，間隔650ms避免連按重疊。
+
+## 已接入技能（2026-11-03）
+
+- 攻擊：下方按鈕或J，500ms四幀動畫，220ms命中幀擊飛當下最近跑道前方18m內最近一個障礙；沒有目標則空踢。擊飛不增加分數／金幣。
+- 無敵：下方按鈕或K，狗熊哆嗦毛循環與護盾持續3000ms遊戲時間。與受傷後1000ms保護分開計時，不延長、不互相覆蓋。
+- 兩技能互斥；播放中重複點按或按住鍵盤不排隊、不重啟；無額外消耗與冷卻。仍可左右換道，技能動畫期間暫不插播側閃動畫。
+- 數值集中在src/data/skills.js。按鈕位置x288／432、y1174，120×132，避免左右換道區與角色腳點。

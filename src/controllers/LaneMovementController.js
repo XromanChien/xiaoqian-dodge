@@ -36,6 +36,7 @@ export default class LaneMovementController {
       duration: this.duration,
       ease: 'Sine.easeInOut',
     });
+    this.scene.events.emit('runner-dodge', direction);
     return true;
   }
 

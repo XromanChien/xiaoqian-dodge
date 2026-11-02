@@ -1,3 +1,6 @@
+import SkillManager from '../managers/SkillManager.js';
+import SkillControls from '../input/SkillControls.js';
+import RunnerAnimator from '../world/RunnerAnimator.js';
 import Phaser from 'phaser';
 import LaneMovementController from '../controllers/LaneMovementController.js';
 import PerspectiveRoad from '../world/PerspectiveRoad.js';
@@ -43,10 +46,10 @@ export default class GameScene extends Phaser.Scene {
     this.character = this.add.container(lanePositions[1], playerY, [shadow, this.appearance])
       .setDepth(feetY);
     this.movement = new LaneMovementController(this, this.character, { lanePositions });
-    // 只讓外觀輕微起伏，角色控制座標與跑道位置保持穩定。
-    this.tweens.add({ targets: this.appearance, y: -5, duration: 150, yoyo: true, repeat: -1,
-      ease: 'Sine.easeInOut' });
+    this.runnerAnimator = new RunnerAnimator(this, this.appearance);
 
+    this.skills = new SkillManager(this);
+    this.skillControls = new SkillControls(this, this.skills);
     this.playerInput = new InputManager(this, this.movement);
     if (this.playerInput.showTouchControls) {
       controlHint.setText('點按左下／右下按鈕換道');
@@ -84,6 +87,9 @@ export default class GameScene extends Phaser.Scene {
     this.refreshDistanceLabel();
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.skillControls.destroy();
+      this.skills.destroy();
+      this.runnerAnimator.destroy();
       this.coinManager.destroy();
       this.obstacleManager.destroy();
       this.movement.destroy();
@@ -105,6 +111,7 @@ export default class GameScene extends Phaser.Scene {
 
   syncRoadAlignment() {
     this.road.alignToBackground(this.backdrop.getRoadProjection());
+    this.road.setSurface(this.backdrop.getSurface());
     this.movement.setLanePositions(this.road.lanePositionsAt(this.character.y + 60));
   }
 
@@ -117,7 +124,7 @@ export default class GameScene extends Phaser.Scene {
 
   takeHit() {
     if (this.ended) return false;
-    if (this.invulnerableMs > 0) return true;
+    if (this.invulnerableMs > 0 || this.skills.invincible) return true;
     this.health = Math.max(0, this.health - 1);
     this.healthLabel.setText('生命 ' + this.health + ' / 3');
     this.cameras.main.flash(140, 180, 35, 35);
@@ -145,17 +152,20 @@ export default class GameScene extends Phaser.Scene {
   update(time, delta) {
     if (this.ended) return;
     const elapsed = Math.min(Math.max(delta, 0), 100);
+    this.skills.update(elapsed);
     this.invulnerableMs = Math.max(0, this.invulnerableMs - elapsed);
     this.slowdownMs = Math.max(0, this.slowdownMs - elapsed);
     this.character.setAlpha(this.invulnerableMs > 0
       && Math.floor(this.invulnerableMs / 90) % 2 === 0 ? 0.35 : 1);
     this.healthLabel.setText('生命 ' + this.health + ' / 3'
-      + (this.invulnerableMs > 0 ? '  ·  無敵／減速' : ''));
+      + (this.skills.invincible ? '  ·  無敵護盾' : this.invulnerableMs > 0 ? '  ·  受傷保護／減速' : ''));
     const speedMultiplier = this.slowdownMs > 0 ? 0.5 : 1;
+    this.runnerAnimator.update(elapsed, speedMultiplier);
+    this.skillControls.update();
     this.stageManager.update(elapsed, (step, stage, speed) => {
-      this.road.update(step, speed);
       this.backdrop.update(step, speed, this.road);
       this.syncRoadAlignment();
+      this.road.update(step, speed);
       this.obstacleManager.update(step, speed);
       if (!this.ended) this.coinManager.update(step, speed);
       return !this.ended;

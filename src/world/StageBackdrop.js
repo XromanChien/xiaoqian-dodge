@@ -39,6 +39,7 @@ export default class StageBackdrop {
     next.distance = 0;
     next.length = Math.max(1, length);
     next.alignment = ROAD_ALIGNMENT[backgroundKey];
+    next.backgroundKey = backgroundKey;
     next.container.setDepth(-1).setAlpha(this.key ? 0 : 1);
     previous.container.setDepth(-2);
     if (this.key) this.transition = { elapsed: 0, previous, next };
@@ -66,7 +67,7 @@ export default class StageBackdrop {
 
   pose(layer, turnOffset) {
     // Progress is monotonic and does not wrap. The gentle tail allows outgoing motion.
-    const progress = layer.distance / layer.length;
+    const progress = layer.distance / 650;
     const zoom = 1.12 + 0.36 * (progress <= 1 ? progress : 1 + 0.15 * (1 - Math.exp(-(progress - 1) / 0.15)));
     return { zoom, x: 360 + turnOffset * 0.08, y: 678 + (640 - 678) * zoom };
   }
@@ -108,6 +109,15 @@ export default class StageBackdrop {
     this.place(previous, oldPose, target);
     this.place(next, nextPose, target);
     next.container.setAlpha(weight);
+  }
+
+  getSurface() {
+    const current = this.layers[this.active];
+    return {
+      from: this.transition?.previous.backgroundKey ?? current.backgroundKey,
+      to: current.backgroundKey,
+      weight: this.transition ? this.transition.next.container.alpha : 1,
+    };
   }
 
   getRoadProjection() {

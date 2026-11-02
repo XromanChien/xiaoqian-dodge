@@ -1,0 +1,142 @@
+{
+  "status": "loaded by BootScene; skills activated through SkillManager",
+  "size": {
+    "width": 887,
+    "height": 1774
+  },
+  "layout": "2x2; explicit widths because canvas width is odd",
+  "assets": [
+    {
+      "file": "xiaoqian-langzi-kick.png",
+      "name": "浪子踢球",
+      "flipX": true,
+      "flipReason": "Mirror each frame at render time to put the sling bag on the same screen-left hip as the current run sprite.",
+      "frames": [
+        {
+          "name": "windup",
+          "rect": [
+            0,
+            0,
+            443,
+            887
+          ],
+          "pivot": [
+            250,
+            835
+          ],
+          "durationMs": 120
+        },
+        {
+          "name": "knee",
+          "rect": [
+            443,
+            0,
+            444,
+            887
+          ],
+          "pivot": [
+            250,
+            835
+          ],
+          "durationMs": 100
+        },
+        {
+          "name": "impact",
+          "rect": [
+            0,
+            887,
+            443,
+            887
+          ],
+          "pivot": [
+            250,
+            835
+          ],
+          "durationMs": 100
+        },
+        {
+          "name": "recover",
+          "rect": [
+            443,
+            887,
+            444,
+            887
+          ],
+          "pivot": [
+            250,
+            835
+          ],
+          "durationMs": 180
+        }
+      ],
+      "impactFrame": 2,
+      "effect": "220ms impact, knock nearest same-lane obstacle within 18m away, 500ms action"
+    },
+    {
+      "file": "xiaoqian-bear-shiver.png",
+      "name": "狗熊哆嗦毛",
+      "flipX": false,
+      "frames": [
+        {
+          "name": "raise",
+          "rect": [
+            0,
+            0,
+            443,
+            887
+          ],
+          "pivot": [
+            220,
+            835
+          ],
+          "durationMs": 125
+        },
+        {
+          "name": "left",
+          "rect": [
+            443,
+            0,
+            444,
+            887
+          ],
+          "pivot": [
+            220,
+            835
+          ],
+          "durationMs": 125
+        },
+        {
+          "name": "compress",
+          "rect": [
+            0,
+            887,
+            443,
+            887
+          ],
+          "pivot": [
+            220,
+            835
+          ],
+          "durationMs": 125
+        },
+        {
+          "name": "right",
+          "rect": [
+            443,
+            887,
+            444,
+            887
+          ],
+          "pivot": [
+            220,
+            835
+          ],
+          "durationMs": 125
+        }
+      ],
+      "suggestedCycles": 6,
+      "effectDurationMs": 3000,
+      "effect": "invincible for 3000ms of gameplay time"
+    }
+  ]
+}
