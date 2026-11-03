@@ -157,3 +157,5 @@ leaderboard.js改為官方supabase.rpc('submit_coin_run',...)與supabase.rpc('ge
 
 使用者要求代為完成設定。已從其登入的Dodge Project確認Project URL與公開Publishable key，寫入忽略追蹤的.env.local及GitHub Actions兩個Repository Variables，未取用secret/service_role或資料庫密碼。發現既有SQL查詢來源為Logs，因此建表未成功；實際Database檢查coin_runs與兩個RPC皆不存在，已在Database查詢建立表、RLS、限制直接表格存取及兩個anon RPC。未移除或覆寫原Logs查詢。
 真實REST讀榜200空陣列，無效提交400、直接表格讀取401。官方SDK版本建置成功。資料庫驗證與Pages發布驗證進行中。現有版本仍為客戶端自報的休閒排行榜，沒有伺服器驗分或IP限流。
+
+正式啟用驗證完成：匿名role交易內連續提交同UUID兩次，讀榜僅一筆；ROLLBACK後REST讀榜仍為空，未留下測試成績。Pages Actions 41727495993成功，提交5a6d841。Edge360×640公開網址實際開始遊戲、死亡結算後點排行榜，成功顯示空榜提示及可登錄表單，無pageerror。.env.local已確認被Git忽略。尚未由真實玩家送出第一筆成績；目前不含防作弊或IP限流。
