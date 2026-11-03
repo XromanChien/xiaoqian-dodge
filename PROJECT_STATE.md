@@ -142,3 +142,7 @@ Vite build通過（原有大型bundle警告仍在）。Edge 360×640手機比例
 Supabase建表腳本supabase/leaderboard.sql含RLS與RPC權限限制、UUID主鍵去重、姓名／數值檢查、同金幣並列名次與時間次排序。新增.env.example、忽略本機env、Pages build公開變數讀取及啟用說明。未建立實際資料庫、未套用SQL、未發布GitHub。
 驗證：Vite build通過；Edge360×640無設定畫面、模擬API姓名送出125本局金幣而非9999累積金幣、回統計再進仍已登錄、僅一次POST、DOM清理、無pageerror。畫面檢視後修正Phaser DOM覆寫display造成的版面與表頭換行，尚需實際後端跨裝置驗收。
 待使用者提供Supabase Project URL及publishable／anon public key，並在其專案執行SQL。現有工具未提供Supabase連線。公開排行榜屬客戶端自報紀錄，尚無伺服器驗分、CAPTCHA或速率限制，不宣稱防作弊。
+
+## 排行榜介面發布（2026-11-04）
+
+依使用者要求已推送d1124bb；GitHub Actions 41684981440部署成功。公開頁面HTTP 200，載入index-4i_VYZcy.js，包含排行榜與尚未開通提示，瀏覽器載入／開始遊戲無pageerror。Supabase專案仍待建立，資料庫未套用，未宣稱可上傳或跨玩家排名。先前「未發布」為當時狀態。
