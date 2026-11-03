@@ -1,3 +1,4 @@
+import { RUN_CYCLE } from '../data/runnerArt.js';
 import { SKILL_ART, SKILLS } from '../data/skills.js';
 import DodgeVoice from '../audio/DodgeVoice.js';
 
@@ -38,7 +39,8 @@ export default class RunnerAnimator {
       this.appearance.angle = skill.kind === 'guard' ? Math.sin(skill.elapsed / 32) * 1.4 : 0;
       return;
     }
-    this.stride += delta * speedMultiplier / 145;
+    this.stride += Math.max(0, delta * speedMultiplier);
+    const runFrame = Math.floor(this.stride / RUN_CYCLE.frameMs) % RUN_CYCLE.frames.length;
     this.elapsed += delta;
     if (this.elapsed < 280) {
       const t = this.elapsed / 280;
@@ -47,11 +49,11 @@ export default class RunnerAnimator {
       this.appearance.angle = this.direction * 6 * push;
       this.appearance.scaleX = 1 - 0.07 * push;
       this.appearance.scaleY = 1 - 0.035 * push;
-      if (this.elapsed > 210) this.appearance.setPose('run');
+      if (this.elapsed > 210) this.appearance.setRunFrame(runFrame);
     } else {
-      this.appearance.setPose('run');
-      this.appearance.y = 60 - Math.abs(Math.sin(this.stride)) * 4;
-      this.appearance.angle = Math.sin(this.stride) * 1.2;
+      this.appearance.setRunFrame(runFrame);
+      this.appearance.y = 60 - Math.abs(Math.sin(this.stride / RUN_CYCLE.frameMs * Math.PI / 2)) * 2;
+      this.appearance.angle = Math.sin(this.stride / RUN_CYCLE.frameMs * Math.PI / 2) * 0.6;
       this.appearance.setScale(1);
     }
   }

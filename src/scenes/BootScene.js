@@ -1,5 +1,5 @@
 import { SKILL_ART } from '../data/skills.js';
-import { RUNNER_ART, RUNNER_FRAMES } from '../data/runnerArt.js';
+import { RUNNER_ART, RUNNER_FRAMES, RUN_CYCLE } from '../data/runnerArt.js';
 import { DODGE_VOICE_KEY, DODGE_VOICE_URL } from '../audio/DodgeVoice.js';
 import Phaser from 'phaser';
 import { STAGE_ART } from '../data/stageArt.js';
@@ -12,6 +12,7 @@ export default class BootScene extends Phaser.Scene {
 
   preload() {
     this.load.image(RUNNER_ART.key, RUNNER_ART.url);
+    this.load.image(RUN_CYCLE.key, RUN_CYCLE.url);
     for (const art of Object.values(SKILL_ART)) this.load.image(art.key, art.url);
     if (DODGE_VOICE_URL) this.load.audio(DODGE_VOICE_KEY, DODGE_VOICE_URL);
     const label = this.add.text(360, 610, '場景載入中 0%', {
@@ -27,6 +28,8 @@ export default class BootScene extends Phaser.Scene {
     for (const [name, bounds] of Object.entries(RUNNER_FRAMES)) {
       if (!texture.has(name)) texture.add(name, 0, ...bounds);
     }
+    const runTexture = this.textures.get(RUN_CYCLE.key);
+    RUN_CYCLE.frames.forEach((rect, i) => { if (!runTexture.has(String(i))) runTexture.add(String(i), 0, ...rect); });
     for (const art of Object.values(SKILL_ART)) {
       const texture = this.textures.get(art.key);
       art.frames.forEach((frame, i) => { if (!texture.has(String(i))) texture.add(String(i), 0, ...frame.rect); });

@@ -118,3 +118,16 @@ InputManager 的 swipe 方法只是預留呼叫入口，不等於已完成手勢
 ## GitHub 發布（2026-11-03）
 
 使用者要求將目前新版發布到GitHub。本次整合共用動態道路、小錢背影與側閃、裝置語音、浪子踢球攻擊、狗熊哆嗦毛3秒無敵與操作按鈕。先前本機建置與功能驗證已通過；已推送功能提交 5c485b7；GitHub Actions 執行 41533177844 部署成功。公開網址 https://xromanchien.github.io/xiaoqian-dodge/ 回應 HTTP 200，載入新版 index-Du7aK3bu.js；Edge 360×640 手機模擬成功開始遊戲並觸發無敵，畫面顯示小錢背影、共用道路、攻擊與無敵按鈕及護盾倒數，無 JavaScript pageerror。前述「未推送」為各任務交付當時狀態。
+
+## 直線跑步動畫（2026-11-03）
+
+使用者要求直線前進改成跑步動作。新增 image/characters/xiaoqian-run-cycle.png 與 RUN_CYCLE.md，四幀透明2×2圖集；更新 runnerArt、BootScene、characterAppearance、RunnerAnimator，以110ms每幀循環，受傷減速時步頻同步降低，0速度不推進步頻。技能及換道優先，結束自動切回跑步；未改碰撞、速度、生命或存檔。
+Vite build通過（原有大型bundle警告仍在）。Edge 360×640手機比例實際畫面已檢視；四幀循環1/2/3/0、0速度、0.5減速、側閃及無敵後返回跑步均驗證通過，無pageerror。素材以內建imagegen生成，提示詞與原點見RUN_CYCLE.md。本次尚未提交或推送GitHub。
+
+## 商店裝備遊戲內外觀美化（2026-11-03）
+
+- 使用者授權美化裝備後的遊戲外觀。新增 src/data/equipmentAnchors.js、src/world/EquipmentRenderer.js，替換 characterAppearance.js 的固定色塊。前一任務的跑步修改保留。
+- 15件現有商品皆有外觀分支：棒球帽／禮帽／針織帽／漁夫帽形狀與縫線、衣服乘色裝飾與細節、鞋面與白底線、斜背包飾邊、麥克風、魔方吊飾、圍巾。沿用程式繪製素材，無新生成圖片。
+- 原始圖集座標定位，靜態、左右閃身、4幀跑步、4幀攻擊、4幀護盾共15組定位；與Sprite同翻轉、縮放及原點，帽子另外補償直式圖集比例；只在姿勢切換重繪。圖層隨rig銷毀，無新計時器。
+- 驗證：Vite build通過（原有bundle大小警告）；Edge隔離環境15商品遍歷跑步／攻擊／護盾及左右閃身無pageerror；初版總覽找出帽型拉高後修正，再檢視360×640實際跑步穿戴畫面。測試未寫入玩家LocalStorage，讀前讀後一致。未測實體手機或宣稱全部組合視覺完美。
+- 限制：此版是逐姿勢定位的風格化裝飾層，服裝保留原有袖子和角色輪廓，並非每件商店服裝獨立重繪的完整圖集。價格、能力、碰撞、存檔格式不變。未提交／推送GitHub。
