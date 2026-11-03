@@ -146,3 +146,14 @@ Supabase建表腳本supabase/leaderboard.sql含RLS與RPC權限限制、UUID主�
 ## 排行榜介面發布（2026-11-04）
 
 依使用者要求已推送d1124bb；GitHub Actions 41684981440部署成功。公開頁面HTTP 200，載入index-4i_VYZcy.js，包含排行榜與尚未開通提示，瀏覽器載入／開始遊戲無pageerror。Supabase專案仍待建立，資料庫未套用，未宣稱可上傳或跨玩家排名。先前「未發布」為當時狀態。
+
+## 官方 Supabase 用戶端接入（2026-11-04）
+
+依使用者要求建立src/services/supabaseClient.js，使用@supabase/supabase-js 2.118.0匯出supabase單一用戶端（缺少設定時為null，維持遊戲可執行）。讀取既有VITE_SUPABASE_URL／VITE_SUPABASE_PUBLISHABLE_KEY；不啟用登入、session保存或URL登入偵測。新增依賴並更新原pnpm-lock.yaml。
+leaderboard.js改為官方supabase.rpc('submit_coin_run',...)與supabase.rpc('get_coin_leaderboard')，保留abortSignal及12秒逾時。playerName來自既有LeaderboardScene姓名欄位，coins明確取result.coinsEarned；ResultScene的runId重試沿用，缺少時只建立一次UUID。不是每次提交都產生新ID。價格／能力／存檔不變。
+驗證：Vite build通過（大型bundle警告仍在）；瀏覽器實際SDK搭配模擬API驗證讀榜、400錯誤處理、重試同UUID、送出125本局金幣而非9999累積餘額、空姓名拒絕，無pageerror。未設定真實公開金鑰，未實際寫入Supabase，未提交或推送GitHub。
+
+## Supabase 正式連線設定（2026-11-04）
+
+使用者要求代為完成設定。已從其登入的Dodge Project確認Project URL與公開Publishable key，寫入忽略追蹤的.env.local及GitHub Actions兩個Repository Variables，未取用secret/service_role或資料庫密碼。發現既有SQL查詢來源為Logs，因此建表未成功；實際Database檢查coin_runs與兩個RPC皆不存在，已在Database查詢建立表、RLS、限制直接表格存取及兩個anon RPC。未移除或覆寫原Logs查詢。
+真實REST讀榜200空陣列，無效提交400、直接表格讀取401。官方SDK版本建置成功。資料庫驗證與Pages發布驗證進行中。現有版本仍為客戶端自報的休閒排行榜，沒有伺服器驗分或IP限流。

@@ -10,3 +10,5 @@
 目前為客戶端回報的休閒排行榜：資料庫檢查姓名／金幣型別與範圍、UUID去重，但不驗證整局遊玩過程，不能宣稱防作弊。公開RPC尚無CAPTCHA／速率限制；若用於競賽獎勵，需另行加入伺服器驗分與防灌榜。管理員可透過Supabase後台移除不當名稱，不開放瀏覽器刪除。
 
 官方API key說明：https://supabase.com/docs/guides/getting-started/api-keys
+
+前端用戶端位於src/services/supabaseClient.js，使用官方@supabase/supabase-js；leaderboard.js呼叫supabase.rpc。設定缺少時supabase為null，排行榜顯示尚未開通。playerName由表單提供，coins為result.coinsEarned，runId在同局重試間保持一致。

@@ -7,7 +7,7 @@ create table if not exists public.coin_runs (
   created_at timestamptz not null default now()
 );
 alter table public.coin_runs enable row level security;
-revoke all on public.coin_runs from anon, authenticated;
+revoke all on public.coin_runs from public, anon, authenticated;
 create index if not exists coin_runs_ranking on public.coin_runs (coins desc, created_at, run_id);
 create or replace function public.submit_coin_run(p_run_id uuid, p_player_name text, p_coins integer)
 returns void language plpgsql security definer set search_path = '' as $$
