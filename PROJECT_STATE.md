@@ -135,3 +135,10 @@ Vite build通過（原有大型bundle警告仍在）。Edge 360×640手機比例
 ## 跑步與裝備新版發布（2026-11-03）
 
 使用者要求更新GitHub。已推送1abd406（加入循環跑步動畫並美化裝備外觀）；GitHub Actions 41580296079部署成功。公開頁面HTTP 200、載入index-BuFu1cwB.js；Edge手機比例成功開始遊戲、無pageerror。前兩任務「尚未推送」為當時交付狀態，現已發布。
+
+## 共用線上排行榜（2026-11-03，等待服務設定）
+
+使用者明確選擇所有玩家共用線上排行榜，授權引入後端儲存，但不要求登入。已新增ResultScene排行榜按鈕、LeaderboardScene姓名表單及前20名、services/leaderboard.js；使用每局UUID與本局coinsEarned登錄，不使用錢包餘額。前端防重點、12秒逾時、錯誤重試、返回保留狀態及Scene離開Abort／DOM清理。無設定時明確停用登錄並顯示未開通。
+Supabase建表腳本supabase/leaderboard.sql含RLS與RPC權限限制、UUID主鍵去重、姓名／數值檢查、同金幣並列名次與時間次排序。新增.env.example、忽略本機env、Pages build公開變數讀取及啟用說明。未建立實際資料庫、未套用SQL、未發布GitHub。
+驗證：Vite build通過；Edge360×640無設定畫面、模擬API姓名送出125本局金幣而非9999累積金幣、回統計再進仍已登錄、僅一次POST、DOM清理、無pageerror。畫面檢視後修正Phaser DOM覆寫display造成的版面與表頭換行，尚需實際後端跨裝置驗收。
+待使用者提供Supabase Project URL及publishable／anon public key，並在其專案執行SQL。現有工具未提供Supabase連線。公開排行榜屬客戶端自報紀錄，尚無伺服器驗分、CAPTCHA或速率限制，不宣稱防作弊。

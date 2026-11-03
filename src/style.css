@@ -27,3 +27,25 @@ body {
   display: block;
   touch-action: none;
 }
+
+.leaderboard-panel { box-sizing:border-box; width:660px; height:1120px; padding:30px; border:2px solid #3bbbe4; border-radius:28px; background:linear-gradient(#1b3552,#102033); color:#fff; font-family:system-ui,"Microsoft JhengHei",sans-serif; display:flex; flex-direction:column; gap:16px; }
+.leaderboard-panel h1 { margin:0; color:#ffd166; text-align:center; font-size:48px; }
+.leaderboard-panel p { margin:0; }
+.lb-subtitle,.lb-note { font-size:24px; color:#b5d2e6; }
+.lb-run { font-size:32px; text-align:center; padding:12px; background:#0e2238; border-radius:12px; }
+.leaderboard-panel label { display:block; font-size:28px; margin-bottom:8px; }
+.lb-entry { display:flex; gap:12px; }
+.lb-entry input { min-width:0; width:100%; box-sizing:border-box; font-size:32px; padding:14px; border:2px solid #7bbfdc; border-radius:12px; color:#152b40; background:#f4fbff; }
+.leaderboard-panel button { font:600 28px system-ui; border:0; border-radius:12px; padding:16px; background:#ffd166; color:#172132; cursor:pointer; white-space:nowrap; }
+.leaderboard-panel button:disabled { opacity:.5; cursor:default; }
+.leaderboard-panel button:focus-visible,.lb-entry input:focus-visible { outline:4px solid #8ceaff; outline-offset:3px; }
+.lb-status { min-height:56px; font-size:25px; color:#ffdf95; }
+.lb-scroll { flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; border:1px solid #42607c; border-radius:12px; }
+.lb-scroll table { width:100%; border-collapse:collapse; font-size:28px; table-layout:fixed; }
+.lb-scroll th { position:sticky; top:0; background:#244763; color:#bce9ff; }
+.lb-scroll td,.lb-scroll th { padding:16px 12px; text-align:left; border-bottom:1px solid #365069; overflow-wrap:anywhere; }
+.lb-scroll th:first-child { width:72px; }.lb-scroll th:last-child { width:95px; }
+.lb-scroll tr:nth-child(even) { background:#1d344b; }.lb-scroll td:last-child { color:#ffd166; }
+.lb-actions { display:flex; gap:14px; }.lb-actions button { flex:1; }.lb-actions .lb-refresh { background:#a5e4fa; }
+.lb-layout { height:100%; display:flex; flex-direction:column; gap:16px; }
+.lb-scroll th:first-child { width:100px; white-space:nowrap; }

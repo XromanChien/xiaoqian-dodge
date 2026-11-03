@@ -8,9 +8,10 @@ export default class ResultScene extends Phaser.Scene {
 
   create({ distance = 0, reason = 'completed', stage, health = 3,
     coinsEarned = 0, totalCoins = 0, coinsSaved = true,
+    runId = crypto.randomUUID(), leaderboardName = '', leaderboardSubmitted = false,
     score = calculateScore(distance, coinsEarned) } = {}) {
     const completed = reason === 'completed';
-    this.result = { distance, reason, stage, health, coinsEarned, totalCoins, score, coinsSaved };
+    this.result = { distance, reason, stage, health, coinsEarned, totalCoins, score, coinsSaved, runId, leaderboardName, leaderboardSubmitted };
     const fontFamily = 'system-ui, "Microsoft JhengHei", sans-serif';
     this.cameras.main.setBackgroundColor('#172132');
     this.add.text(360, 270, completed ? '全程完成！' : '遊戲結束', {
@@ -31,9 +32,12 @@ export default class ResultScene extends Phaser.Scene {
     this.add.text(360, 735, coinsSaved ? '累積金幣已儲存在此瀏覽器' : '無法儲存金幣，請確認瀏覽器儲存設定', {
       fontFamily, fontSize: '21px', color: coinsSaved ? '#a8c4d5' : '#ffb080',
     }).setOrigin(0.5);
-    const button = this.add.rectangle(360, 850, 360, 112, 0xffd166)
+    const leaderboard = this.add.rectangle(360, 850, 360, 100, 0x83ddff).setInteractive({ useHandCursor: true });
+    this.add.text(360, 850, '排行榜', { fontFamily, fontSize: '36px', color: '#172132' }).setOrigin(0.5);
+    leaderboard.on('pointerdown', () => this.scene.start('LeaderboardScene', { result: this.result }));
+    const button = this.add.rectangle(360, 990, 360, 112, 0xffd166)
       .setInteractive({ useHandCursor: true });
-    this.add.text(360, 850, '回到選單', {
+    this.add.text(360, 990, '回到選單', {
       fontFamily, fontSize: '36px', color: '#172132',
     }).setOrigin(0.5);
     button.on('pointerdown', () => this.scene.start('MenuScene'));
