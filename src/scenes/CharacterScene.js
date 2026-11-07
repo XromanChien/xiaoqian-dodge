@@ -1,4 +1,4 @@
-import { navigationFooter, primaryButton } from '../ui/navigationUi.js';
+import { primaryButton } from '../ui/navigationUi.js';
 import Phaser from 'phaser';
 import { loadProfile, selectCharacter } from '../storage/profileStorage.js';
 import { artBackground, artHotspot, artLabel, artPanel } from '../ui/artUi.js';
@@ -24,7 +24,7 @@ export default class CharacterScene extends Phaser.Scene {
       const result = selectCharacter(this.selectedCharacter);
       if (result.ok) this.scene.start('ShopScene'); else this.status.setText(result.message);
     };
-    navigationFooter(this);
+
     primaryButton(this,{name:'confirm-character-shop',y:1170,
       label:'外觀商店 ▶',action:openShop});
     // Remove baked-in cards and the permanently selected first-card arrow.
@@ -84,4 +84,5 @@ export default class CharacterScene extends Phaser.Scene {
     this.status.setText('');
   }
 }
+
 
