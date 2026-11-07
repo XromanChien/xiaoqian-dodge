@@ -43,8 +43,7 @@ export default class InputManager {
       { x: width - 120, label: '→', action: () => this.moveRight() },
     ];
     for (const { x, label, action } of entries) {
-      const button = this.scene.add.rectangle(x, y, 192, 184, 0xffffff, 0.08)
-        .setStrokeStyle(2, 0xffffff, 0.25)
+      const button = this.scene.add.image(x, y, 'neon-buttons', 'blue').setDisplaySize(192, 110).setAlpha(0.45)
         .setDepth(20000).setScrollFactor(0)
         .setInteractive({ useHandCursor: true });
       const arrow = this.scene.add.text(x, y, label, {
@@ -52,10 +51,10 @@ export default class InputManager {
       }).setOrigin(0.5).setAlpha(0.6).setDepth(20001).setScrollFactor(0);
       // 只監聽 pointerdown，避免觸控同時處理 click 而重複換道。
       button.on('pointerdown', () => {
-        button.setFillStyle(0xffffff, 0.2);
+        button.setAlpha(0.8);
         action();
       });
-      const release = () => button.setFillStyle(0xffffff, 0.08);
+      const release = () => button.setAlpha(0.45);
       button.on('pointerup', release);
       button.on('pointerout', release);
       this.touchButtons.push(button);
@@ -99,3 +98,4 @@ export default class InputManager {
     this.scene = null;
   }
 }
+

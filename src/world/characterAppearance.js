@@ -1,3 +1,4 @@
+import { createKakaAppearance } from './kakaAppearance.js';
 import { SKILL_ART } from '../data/skills.js';
 import EquipmentRenderer from './EquipmentRenderer.js';
 import { loadProfile } from '../storage/profileStorage.js';
@@ -5,6 +6,7 @@ import { RUNNER_ART, RUN_CYCLE } from '../data/runnerArt.js';
 
 // Presentation only. The parent container and its collision footpoint stay unchanged.
 export function createCharacterAppearance(scene, profile = loadProfile()) {
+  if (profile.character === 'kaka') return createKakaAppearance(scene, profile);
   const rig = scene.add.container(0, 60);
   const sprite = scene.add.sprite(0, 0, RUNNER_ART.key, 'run').setOrigin(0.5, 890 / 1024).setScale(0.28);
   rig.add(sprite);

@@ -7,11 +7,18 @@ const coins = value => Number.isSafeInteger(value) && value >= 0 ? value : 0;
 function normalize(raw = {}) {
   const ownedItems = [...new Set(Array.isArray(raw.ownedItems)
     ? raw.ownedItems.filter(id => Object.hasOwn(ITEM_BY_ID, id)) : [])];
-  const equipped = Object.fromEntries(EQUIPMENT_SLOTS.map(slot => {
-    const id = raw.equipped?.[slot.id];
+  const character = raw.character === 'kaka' ? 'kaka' : 'xiaoqian';
+  const cleanEquipment = source => Object.fromEntries(EQUIPMENT_SLOTS.map(slot => {
+    const id = source?.[slot.id];
     return [slot.id, ownedItems.includes(id) && ITEM_BY_ID[id]?.slot === slot.id ? id : null];
   }));
-  return { version: 1, totalCoins: coins(raw.totalCoins), character: 'xiaoqian', ownedItems, equipped };
+  const equipmentByCharacter = {
+    xiaoqian: cleanEquipment(raw.equipmentByCharacter?.xiaoqian ?? raw.equipped),
+    kaka: cleanEquipment(raw.equipmentByCharacter?.kaka ?? {}),
+  };
+  const equipped = cleanEquipment(raw.equipped ?? equipmentByCharacter[character]);
+  equipmentByCharacter[character] = equipped;
+  return { version: 1, totalCoins: coins(raw.totalCoins), character, ownedItems, equipped, equipmentByCharacter };
 }
 
 export function loadProfile() {
@@ -66,4 +73,13 @@ export function addEarnedCoins(amount) {
   profile.totalCoins = Math.min(Number.MAX_SAFE_INTEGER, profile.totalCoins + coins(amount));
   const result = saveProfile(profile);
   return { total: profile.totalCoins, saved: result.ok };
+}
+
+export function selectCharacter(id) {
+  if (!['xiaoqian', 'kaka'].includes(id)) return { ok: false, message: '角色尚未開放。' };
+  const profile = loadProfile();
+  profile.equipmentByCharacter[profile.character] = profile.equipped;
+  profile.character = id;
+  profile.equipped = profile.equipmentByCharacter[id];
+  return saveProfile(profile);
 }

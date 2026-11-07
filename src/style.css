@@ -49,3 +49,10 @@ body {
 .lb-actions { display:flex; gap:14px; }.lb-actions button { flex:1; }.lb-actions .lb-refresh { background:#a5e4fa; }
 .lb-layout { height:100%; display:flex; flex-direction:column; gap:16px; }
 .lb-scroll th:first-child { width:100px; white-space:nowrap; }
+
+/* Home-style gold / cyan capsule controls, also used by the DOM leaderboard. */
+.leaderboard-panel button { border-radius:999px; border:3px solid #a5f8ff; color:#fff; font-weight:800; text-shadow:1px 2px 1px #6d2900;
+ background:linear-gradient(#fff7a0 0%,#ffd934 25%,#ffb700 65%,#f59100 100%); box-shadow:0 0 0 2px #098edf,0 0 12px #10cfff,inset 0 0 0 2px #ffe586; }
+.lb-actions .lb-refresh { background:linear-gradient(#55ddff,#0752e8 50%,#122a87); text-shadow:1px 2px 1px #06143b; }
+.leaderboard-panel button:hover:not(:disabled) { filter:brightness(1.12); }
+.leaderboard-panel button:disabled { filter:saturate(.35); box-shadow:none; }

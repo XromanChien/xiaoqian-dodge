@@ -59,7 +59,7 @@ export default class GameScene extends Phaser.Scene {
       fontFamily, fontSize: '34px', color: '#ffd166', fontStyle: 'bold',
     }).setOrigin(0.5).setDepth(10000);
     this.distanceLabel = this.add.text(width / 2, 99, '', {
-      fontFamily, fontSize: '24px', color: '#ffffff',
+      fontFamily, fontSize: '21px', color: '#ffffff', align: 'center',
     }).setOrigin(0.5).setDepth(10000);
     this.coinLabel = this.add.text(width / 2, 246, '本局金幣 0', {
       fontFamily, fontSize: '24px', color: '#ffd166',
@@ -80,7 +80,6 @@ export default class GameScene extends Phaser.Scene {
         this.road.applyPalette(palette);
         this.stageLabel.setText(stage.id + ' / 12  ' + stage.name + (section ? ' · ' + section.name : ''));
       },
-      onComplete: () => this.endRun('completed'),
     });
     this.stageManager.start();
     this.syncRoadAlignment();
@@ -116,10 +115,9 @@ export default class GameScene extends Phaser.Scene {
   }
 
   refreshDistanceLabel() {
-    const { distance, currentStage, totalDistance } = this.stageManager;
-    this.distanceLabel.setText(Math.floor(distance) + ' / ' + totalDistance
-      + ' m  ·  本關 ' + Math.floor(distance - currentStage.startDistance)
-      + ' / ' + currentStage.length + ' m');
+    const { distance, lapDistance, lap, speedMultiplier } = this.stageManager;
+    this.distanceLabel.setText('第 ' + lap + ' 輪 · ' + speedMultiplier + ' 倍速 · 累計 ' + Math.floor(distance) + ' m'
+      + '\n本輪 ' + Math.floor(lapDistance) + ' / ' + this.stageManager.totalDistance + ' m');
   }
 
   takeHit() {
@@ -144,7 +142,7 @@ export default class GameScene extends Phaser.Scene {
     this.playerInput.destroy();
     const wallet = bankCoins(this.coinsEarned);
     this.scene.start('ResultScene', { reason, distance: this.stageManager.distance,
-      health: this.health, stage: this.stageManager.currentStage,
+      lap: this.stageManager.lap, health: this.health, stage: this.stageManager.currentStage,
       coinsEarned: this.coinsEarned, totalCoins: wallet.total, coinsSaved: wallet.saved,
       score: calculateScore(this.stageManager.distance, this.coinsEarned) });
   }
@@ -160,7 +158,7 @@ export default class GameScene extends Phaser.Scene {
     this.healthLabel.setText('生命 ' + this.health + ' / 3'
       + (this.skills.invincible ? '  ·  無敵護盾' : this.invulnerableMs > 0 ? '  ·  受傷保護／減速' : ''));
     const speedMultiplier = this.slowdownMs > 0 ? 0.5 : 1;
-    this.runnerAnimator.update(elapsed, speedMultiplier);
+    this.runnerAnimator.update(elapsed, speedMultiplier * this.stageManager.speedMultiplier);
     this.skillControls.update();
     this.stageManager.update(elapsed, (step, stage, speed) => {
       this.backdrop.update(step, speed, this.road);

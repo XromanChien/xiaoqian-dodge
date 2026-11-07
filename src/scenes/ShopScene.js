@@ -1,107 +1,67 @@
+import { neonButton } from '../ui/neonButton.js';
 import Phaser from 'phaser';
-import { ITEM_BY_ID, EQUIPMENT_SLOTS } from '../data/shopItems.js';
+import { SHOP_ITEMS, ITEM_BY_ID, EQUIPMENT_SLOTS } from '../data/shopItems.js';
 import { SHOP_ART_CARDS } from '../data/shopArtLayout.js';
 import { loadProfile, purchaseItem, equipItem } from '../storage/profileStorage.js';
-import { artBackground, artHotspot, artLabel, artPanel, ax, ay } from '../ui/artUi.js';
-
+import { createCharacterAppearance } from '../world/characterAppearance.js';
+const FONT = 'system-ui, Microsoft JhengHei';
 export default class ShopScene extends Phaser.Scene {
   constructor() { super('ShopScene'); }
-  create({ message = '', selected = 'default-head', category = 'all', equipment = false } = {}) {
-    this.profile = loadProfile();
-    this.selected = selected;
-    this.category = category;
-    artBackground(this, 'shop-art');
-    artHotspot(this, 'back-menu', 38, 33, 95, 77, () => this.scene.start('MenuScene'));
-    // 原圖餘額與加號由真實餘額及裝備管理入口取代，不提供充值。
-    artPanel(this, 700, 34, 147, 57, 0x071e4c, 1);
-    artLabel(this, 773, 64, this.profile.totalCoins.toLocaleString(), 27);
-    artPanel(this, 851, 34, 61, 57, 0x112f60, 1);
-    artLabel(this, 882, 63, '裝備', 16);
-    artHotspot(this, 'equipment', 851, 34, 61, 57, () => this.refresh({ equipment: true }));
-    artHotspot(this, 'character-select', 768, 314, 129, 130, () => this.scene.start('CharacterScene'));
-    ['street-cap', 'magic-hat', 'blue-beanie'].forEach((id, i) => {
-      artHotspot(this, 'preview-' + id, 770, 456 + i * 105, 125, 97, () => this.refresh({ selected: id }));
+  text(x,y,text,size=24,color='#ffffff') { return this.add.text(x,y,text,{fontFamily:FONT,fontSize:size+'px',color,align:'center'}).setOrigin(.5); }
+  button(name,x,y,w,h,label,action,color=0x164d79,disabled=false) {
+    return neonButton(this,{name,x,y,width:w,height:h,label,action,disabled,
+      tone:[0xbb7c0b,0x97620b,0x745315].includes(color)?'gold':'blue',fontSize:h<50?19:24});
+  }
+  create({category='head',page=0,message=''}={}) {
+    this.profile=loadProfile(); this.category=category; this.page=page;
+    this.add.image(360,640,'shop-background','__BASE').setDisplaySize(720,1280);
+    this.button('back-character',76,47,140,65,'‹ 選角色',()=>this.scene.start('CharacterScene'));
+    this.add.graphics().fillStyle(0x061e50,.92).fillRoundedRect(496,25,204,50,22).lineStyle(2,0x4fdcff).strokeRoundedRect(496,25,204,50,22);
+    this.text(598,50,'金幣 '+this.profile.totalCoins,24,'#ffe16b');
+    this.preview=createCharacterAppearance(this,this.profile).setPosition(315,625).setScale(1.8);
+    this.preview.setRunFrame(0);
+    this.add.graphics().fillStyle(0x071d4c,.86).fillRoundedRect(472,255,225,295,20).lineStyle(2,0x66dfff).strokeRoundedRect(472,255,225,295,20);
+    this.text(585,279,this.profile.character==='kaka'?'咔咔':'小錢',32,'#ffe16b');
+    this.text(585,320,'目前穿搭',21,'#bdefff');
+    EQUIPMENT_SLOTS.forEach((slot,i)=>{
+      const id=this.profile.equipped[slot.id];
+      this.text(585,357+i*32,slot.name+'：'+(ITEM_BY_ID[id]?.name??'預設'),17);
     });
-    this.cards = SHOP_ART_CARDS.map(card => ({ ...card, ...(card.id ? ITEM_BY_ID[card.id] : {}), key: card.id ?? 'default-' + card.slot }));
-    const selectedCard = this.cards.find(card => card.key === selected) ?? this.cards[0];
-    artPanel(this, 640, 790, 270, 74, 0x09204c, 1);
-    artLabel(this, 775, 810, selectedCard.name, 18, '#bdefff');
-    artLabel(this, 775, 842, this.actionLabel(selectedCard), 23, '#ffe570');
-    artHotspot(this, 'selected-action', 640, 790, 270, 74, () => this.act(selectedCard));
-    // 清除原圖固定的帽子高亮，改為真正的分類按鈕。
-    const tabs = [{id:'head',name:'帽子'}, {id:'outfit',name:'上衣'}, {id:'bottoms',name:'下裝'},
-      {id:'shoes',name:'鞋子'}, {id:'accessory',name:'配件'}, {id:'effect',name:'特效'}];
-    tabs.forEach((tab, i) => {
-      const x = 18 + i * 153;
-      artPanel(this, x, 887, 145, 72, category === tab.id ? 0x725716 : 0x082656, 1);
-      artLabel(this, x + 72, 924, tab.name, 25, category === tab.id ? '#ffe570' : '#ffffff');
-      artHotspot(this, 'tab-' + tab.id, x, 887, 145, 72,
-        () => this.refresh({ category: category === tab.id ? 'all' : tab.id }));
-    });
-    for (const card of this.cards) {
-      const active = category === 'all' || category === card.slot;
-      const key = card.key;
-      // 圖案與名稱沿用原圖；價格與按鈕狀態由存檔即時計算。
-      artPanel(this, card.x + 6, card.y + card.h - 77, card.w - 12, 72, 0x081b42, 1);
-      artLabel(this, card.x + card.w / 2, card.y + card.h - 61,
-        card.id ? card.price.toLocaleString() + ' 金幣' : '預設外觀', 16, '#ffe570');
-      const equipped = this.profile.equipped[card.slot] === card.id;
-      artPanel(this, card.x + 9, card.y + card.h - 43, card.w - 18, 34, equipped ? 0x086bbd : 0x80601c, 1);
-      artLabel(this, card.x + card.w / 2, card.y + card.h - 26, this.actionLabel(card), 18);
-      if (!active) {
-        this.add.rectangle(ax(card.x + card.w/2), ay(card.y + card.h/2), ax(card.w), ay(card.h), 0x051122, 0.75);
-      } else {
-        artHotspot(this, 'select-' + key, card.x, card.y, card.w, card.h - 80, () => this.refresh({ selected: key }));
-        artHotspot(this, 'action-' + key, card.x + 8, card.y + card.h - 44, card.w - 16, 38, () => this.act(card));
-      }
-      if (selected === key) this.add.rectangle(ax(card.x+card.w/2),ay(card.y+card.h/2),ax(card.w),ay(card.h))
-        .setFillStyle(0xffffff, 0).setStrokeStyle(3, 0xffed88);
+    this.add.graphics().fillStyle(0x061e50,.9).fillRoundedRect(35,655,650,40,18);
+    this.text(360,675,message||'道具共用 · 穿搭分開保存 · 外觀不影響能力',19,'#e1f7ff').setWordWrapWidth(620);
+    EQUIPMENT_SLOTS.forEach((slot,i)=>this.button('tab-'+slot.id,65+i*118,729,112,60,slot.name,
+      ()=>this.scene.restart({category:slot.id}),category===slot.id?0x97620b:0x123653));
+    const choices=[{id:null,slot:category,name:'預設外觀',price:0},...SHOP_ITEMS.filter(item=>item.slot===category)];
+    const pages=Math.max(1,Math.ceil(choices.length/6)); this.page=Math.min(page,pages-1);
+    choices.slice(this.page*6,this.page*6+6).forEach((item,i)=>this.itemCard(item,i));
+    this.text(360,1157,(this.page+1)+' / '+pages,20);
+    if(pages>1){
+      this.button('previous-page',215,1157,120,52,'上一頁',()=>this.scene.restart({category,page:(this.page+pages-1)%pages}));
+      this.button('next-page',505,1157,120,52,'下一頁',()=>this.scene.restart({category,page:(this.page+1)%pages}));
     }
-    const hint = message || (['bottoms','effect'].includes(category) ? '此分類敬請期待 · 再點一次可顯示全部' : '外觀不影響能力 · 點分類可篩選，再點恢復全部');
-    artPanel(this, 30, 742, 590, 46, 0x061832, 0.92);
-    artLabel(this, 325, 765, hint, 16).setWordWrapWidth(ax(560));
-    if (equipment) this.showEquipment(message);
+    this.button('start-game',360,1220,490,100,'開始遊戲 ▶',()=>this.scene.start('GameScene'),0xbb7c0b);
   }
-
-  actionLabel(card) {
-    if (this.profile.equipped[card.slot] === card.id) return '裝備中';
-    if (!card.id || this.profile.ownedItems.includes(card.id)) return '裝備';
-    return this.profile.totalCoins >= card.price ? '購買' : '金幣不足';
+  itemCard(item,index) {
+    const x=126+index%3*234,y=853+Math.floor(index/3)*197;
+    const equipped=this.profile.equipped[item.slot]===item.id;
+    const g=this.add.graphics();
+    for(const [width,alpha] of [[10,.12],[5,.35],[2,1]]) g.lineStyle(width,equipped?0xffdf67:0x62baff,alpha).strokeRoundedRect(x-106,y-94,212,188,18);
+    g.fillStyle(0x102a69,.90).fillRoundedRect(x-105,y-93,210,186,18);
+    const card=SHOP_ART_CARDS.find(c=>c.id===item.id&&(item.id||c.slot===item.slot));
+    if(card){
+      const tex=this.textures.get('shop-art'),source=tex.getSourceImage(),name='product-'+(item.id??item.slot);
+      if(!tex.has(name))tex.add(name,0,Math.round((card.x+8)*source.width/941),Math.round((card.y+6)*source.height/1672),
+        Math.round((card.w-16)*source.width/941),Math.round(Math.min(110,card.h-110)*source.height/1672));
+      this.add.image(x,y-43,'shop-art',name).setDisplaySize(152,87);
+    }else this.text(x,y-45,item.id?'✦':'—',46,'#8cdfff');
+    this.text(x,y+17,item.name,20);
+    const owned=!item.id||this.profile.ownedItems.includes(item.id);
+    this.text(x,y+45,owned?'已擁有':item.price+' 金幣',18,'#ffe16b');
+    this.button('item-'+(item.id??'default'),x,y+74,196,38,equipped?'✓ 裝備中':owned?'裝備':this.profile.totalCoins<item.price?'金幣不足':'購買',()=>{
+      if(equipped)return;
+      const result=owned?equipItem(item.slot,item.id):purchaseItem(item.id);
+      this.scene.restart({category:this.category,page:this.page,message:result.ok?(owned?'已裝備 ':'已購買，點裝備穿上：')+item.name:result.message});
+    },equipped?0x12699b:0x745315,equipped||(!owned&&this.profile.totalCoins<item.price));
   }
-
-  act(card) {
-    const owned = !card.id || this.profile.ownedItems.includes(card.id);
-    const result = owned ? equipItem(card.slot, card.id) : purchaseItem(card.id);
-    this.refresh({ selected: card.key, message: result.ok
-      ? owned ? '已裝備 ' + card.name : '已購買 ' + card.name + '，再點一次裝備'
-      : result.message });
-  }
-
-  refresh(data = {}) {
-    this.scene.restart({ selected: this.selected, category: this.category, ...data });
-  }
-
-  showEquipment(message) {
-    // 最上層輸入遮罩，避免操作裝備時誤觸下方商品。
-    this.add.rectangle(360, 640, 720, 1280, 0x020b19, 0.9).setInteractive();
-    artPanel(this, 60, 260, 821, 1030, 0x0b2042, 1);
-    artLabel(this, 470, 330, '我的裝備', 36, '#ffe570');
-    artLabel(this, 470, 395, '包含舊版已購買道具 · 僅影響外觀', 20);
-    EQUIPMENT_SLOTS.forEach((slot, index) => {
-      const y = 500 + index * 112;
-      const current = this.profile.equipped[slot.id];
-      artLabel(this, 400, y, slot.name + '：' + (ITEM_BY_ID[current]?.name ?? '預設外觀'), 23);
-      const choices = [null, ...this.profile.ownedItems.filter(id => ITEM_BY_ID[id].slot === slot.id)];
-      artPanel(this, 670, y-33, 140, 66);
-      artLabel(this, 740, y, choices.length > 1 ? '切換' : '預設', 23);
-      if (choices.length > 1) artHotspot(this, 'equip-' + slot.id, 670, y-33, 140, 66, () => {
-        const result = equipItem(slot.id, choices[(choices.indexOf(current)+1)%choices.length]);
-        this.refresh({ equipment: true, message: result.ok ? '裝備已更新' : result.message });
-      });
-    });
-    artLabel(this, 470, 1135, message || '點選切換可循環穿戴／卸下', 18).setWordWrapWidth(570);
-    artPanel(this, 320, 1190, 300, 70, 0x175b90);
-    artLabel(this, 470, 1225, '返回商店', 26);
-    artHotspot(this, 'close-equipment', 320, 1190, 300, 70, () => this.refresh());
-  }
+  update(time) { if(this.preview) this.preview.setRunFrame(Math.floor(time/180)%4); }
 }

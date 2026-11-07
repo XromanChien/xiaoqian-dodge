@@ -1,3 +1,4 @@
+import { KAKA_ART, registerKakaFrames } from '../data/kakaArt.js';
 import { SKILL_ART } from '../data/skills.js';
 import { RUNNER_ART, RUNNER_FRAMES, RUN_CYCLE } from '../data/runnerArt.js';
 import { DODGE_VOICE_KEY, DODGE_VOICE_URL } from '../audio/DodgeVoice.js';
@@ -11,6 +12,7 @@ export default class BootScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image(KAKA_ART.key, KAKA_ART.url);
     this.load.image(RUNNER_ART.key, RUNNER_ART.url);
     this.load.image(RUN_CYCLE.key, RUN_CYCLE.url);
     for (const art of Object.values(SKILL_ART)) this.load.image(art.key, art.url);
@@ -24,6 +26,11 @@ export default class BootScene extends Phaser.Scene {
   }
 
   create() {
+    const buttons = this.textures.get('neon-buttons');
+    const source = buttons.getSourceImage();
+    buttons.add('gold',0,0,0,source.width,Math.floor(source.height/2));
+    buttons.add('blue',0,0,Math.floor(source.height/2),source.width,Math.ceil(source.height/2));
+    registerKakaFrames(this.textures.get(KAKA_ART.key));
     const texture = this.textures.get(RUNNER_ART.key);
     for (const [name, bounds] of Object.entries(RUNNER_FRAMES)) {
       if (!texture.has(name)) texture.add(name, 0, ...bounds);

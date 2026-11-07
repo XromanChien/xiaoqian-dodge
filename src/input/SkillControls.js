@@ -10,11 +10,10 @@ export default class SkillControls {
       ['attack', 288, '攻擊', 'J · 浪子踢球', 0xffc14d, 'J'],
       ['guard', 432, '無敵', 'K · 3秒護盾', 0x5ce1ff, 'K'],
     ]) {
-      const plate = scene.add.rectangle(x, 1174, 120, 132, 0x101c2d, 0.9)
-        .setStrokeStyle(3, color).setDepth(20002).setInteractive({ useHandCursor: true });
-      const title = scene.add.text(x, 1150, label, { fontFamily: 'system-ui, Microsoft JhengHei',
-        fontSize: '30px', fontStyle: 'bold', color: '#' + color.toString(16) }).setOrigin(0.5).setDepth(20003);
-      const hint = scene.add.text(x, 1190, subtitle, { fontFamily: 'system-ui, Microsoft JhengHei',
+      const plate = scene.add.image(x, 1174, 'neon-buttons', kind === 'attack' ? 'gold' : 'blue').setDisplaySize(132, 100).setDepth(20002).setInteractive({ useHandCursor: true });
+      const title = scene.add.text(x, 1159, label, { fontFamily: 'system-ui, Microsoft JhengHei',
+        fontSize: '30px', fontStyle: 'bold', color: '#ffffff', stroke: '#172132', strokeThickness: 4 }).setOrigin(0.5).setDepth(20003);
+      const hint = scene.add.text(x, 1188, subtitle, { fontFamily: 'system-ui, Microsoft JhengHei',
         fontSize: '16px', color: '#ecf5ff' }).setOrigin(0.5).setDepth(20003);
       const meter = scene.add.rectangle(x - 49, 1221, 98, 5, color).setOrigin(0, 0.5).setDepth(20003);
       plate.on('pointerdown', () => skills.activate(kind));
@@ -47,3 +46,4 @@ export default class SkillControls {
     this.aura.destroy();
   }
 }
+

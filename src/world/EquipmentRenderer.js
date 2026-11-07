@@ -4,7 +4,8 @@ import { EQUIPMENT_ANCHORS } from '../data/equipmentAnchors.js';
 // Code-native cosmetic layers: retain the underlying sprite's fabric shading.
 // Only rebuilt on pose changes; no textures, timers or per-frame allocations accumulate.
 export default class EquipmentRenderer {
-  constructor(scene, rig, sprite, profile) {
+  constructor(scene, rig, sprite, profile, anchors = EQUIPMENT_ANCHORS) {
+    this.anchors = anchors;
     this.sprite = sprite;
     this.items = Object.fromEntries(Object.entries(profile.equipped).map(([slot,id])=>[slot,ITEM_BY_ID[id]]));
     this.root = scene.add.container();
@@ -14,7 +15,7 @@ export default class EquipmentRenderer {
     rig.add(this.root);
   }
   draw(pose) {
-    const a = EQUIPMENT_ANCHORS[pose] || EQUIPMENT_ANCHORS.run;
+    const a = this.anchors[pose] || this.anchors.run;
     const s = this.sprite, f = this.fabric, g = this.details;
     f.clear(); g.clear();
     this.root.setPosition((s.flipX ? s.width-s.displayOriginX : -s.displayOriginX)*s.scaleX, -s.displayOriginY*s.scaleY);

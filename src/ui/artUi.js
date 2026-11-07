@@ -4,7 +4,7 @@ export const ART_HEIGHT = 1672;
 export const ax = x => x * 720 / ART_WIDTH;
 export const ay = y => y * 1280 / ART_HEIGHT;
 export function artBackground(scene, key) {
-  return scene.add.image(0, 0, key).setOrigin(0).setDisplaySize(720, 1280);
+  return scene.add.image(0, 0, key, '__BASE').setOrigin(0).setDisplaySize(720, 1280);
 }
 export function artHotspot(scene, name, x, y, width, height, action) {
   const zone = scene.add.zone(ax(x + width / 2), ay(y + height / 2), ax(width), ay(height))
