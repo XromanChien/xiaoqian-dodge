@@ -32,7 +32,14 @@ export default class LeaderboardScene extends Phaser.Scene {
     if (result?.leaderboardSubmitted) this.submitButton.textContent = '已登錄';
     this.form.onsubmit = event => { event.preventDefault(); this.submit(); };
     this.refreshButton.onclick = () => this.refresh();
-    panel.querySelector('.lb-back').onclick = () => this.scene.start('ResultScene', this.result);
+    const backButton = panel.querySelector('.lb-back');
+    backButton.textContent = result ? '返回本局統計' : '返回首頁';
+    backButton.onclick = () => result ? this.scene.start('ResultScene', this.result) : this.scene.start('MenuScene');
+    if (!result) {
+      this.form.hidden = true;
+      panel.querySelector('.lb-run').hidden = true;
+      panel.querySelector('.lb-note').hidden = true;
+    }
     this.add.dom(360, 640, panel);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.controller.abort();
@@ -88,3 +95,4 @@ export default class LeaderboardScene extends Phaser.Scene {
     }
   }
 }
+

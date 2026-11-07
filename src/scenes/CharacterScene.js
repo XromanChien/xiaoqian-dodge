@@ -1,4 +1,4 @@
-import { neonButton } from '../ui/neonButton.js';
+import { navigationFooter, primaryButton } from '../ui/navigationUi.js';
 import Phaser from 'phaser';
 import { loadProfile, selectCharacter } from '../storage/profileStorage.js';
 import { artBackground, artHotspot, artLabel, artPanel } from '../ui/artUi.js';
@@ -24,8 +24,9 @@ export default class CharacterScene extends Phaser.Scene {
       const result = selectCharacter(this.selectedCharacter);
       if (result.ok) this.scene.start('ShopScene'); else this.status.setText(result.message);
     };
-    neonButton(this,{name:'confirm-character-shop',x:365,y:1155,width:480,height:140,
-      label:'外觀商店 ▶',fontSize:44,action:openShop});
+    navigationFooter(this);
+    primaryButton(this,{name:'confirm-character-shop',y:1170,
+      label:'外觀商店 ▶',action:openShop});
     // Remove baked-in cards and the permanently selected first-card arrow.
     const strip = frame(this, 'jinlongRoad-art', 'selection-strip', 0, 325, 941, 232);
     this.add.image(0, 249, 'jinlongRoad-art', strip).setOrigin(0).setDisplaySize(720, 178);
@@ -39,8 +40,7 @@ export default class CharacterScene extends Phaser.Scene {
       fontSize: '18px', color: '#ffffff', lineSpacing: 9, wordWrap: { width: 225 } });
     artPanel(this, 555, 1375, 363, 40, 0x071a36, 0.94);
     artLabel(this, 736, 1395, '能力相同 · 能力條僅為展示', 17, '#bdefff');
-    neonButton(this,{name:'open-shop',x:627,y:55,width:160,height:60,label:'外觀商店',fontSize:21,tone:'blue',action:openShop});
-    this.status = artLabel(this, 470, 1633, '', 20);
+    this.status = this.add.text(360,1245,'',{fontFamily:'system-ui',fontSize:'20px',color:'#ffcc99'}).setOrigin(.5);
     this.previewCharacter(loadProfile().character);
   }
   createCard(index) {
@@ -81,6 +81,7 @@ export default class CharacterScene extends Phaser.Scene {
       if(selected) card.tween.resume(); else card.tween.pause();
     }
     this.intro.setText(data.intro);
-    this.status.setText(data.name+' · 前往「外觀商店」穿搭');
+    this.status.setText('');
   }
 }
+

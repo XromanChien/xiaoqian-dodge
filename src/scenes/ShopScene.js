@@ -1,3 +1,4 @@
+import { primaryButton } from '../ui/navigationUi.js';
 import { neonButton } from '../ui/neonButton.js';
 import Phaser from 'phaser';
 import { SHOP_ITEMS, ITEM_BY_ID, EQUIPMENT_SLOTS } from '../data/shopItems.js';
@@ -39,7 +40,7 @@ export default class ShopScene extends Phaser.Scene {
       this.button('previous-page',215,1157,120,52,'上一頁',()=>this.scene.restart({category,page:(this.page+pages-1)%pages}));
       this.button('next-page',505,1157,120,52,'下一頁',()=>this.scene.restart({category,page:(this.page+1)%pages}));
     }
-    this.button('start-game',360,1220,490,100,'開始遊戲 ▶',()=>this.scene.start('GameScene'),0xbb7c0b);
+    primaryButton(this,{name:'start-game',y:1220,label:'開始遊戲 ▶',action:()=>this.scene.start('GameScene')});
   }
   itemCard(item,index) {
     const x=126+index%3*234,y=853+Math.floor(index/3)*197;
@@ -65,3 +66,4 @@ export default class ShopScene extends Phaser.Scene {
   }
   update(time) { if(this.preview) this.preview.setRunFrame(Math.floor(time/180)%4); }
 }
+
